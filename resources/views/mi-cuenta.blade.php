@@ -78,7 +78,6 @@ if ($rol_de_usuario_id <> '') {
             <div class="box-footer no-padding">
               <ul class="nav nav-stacked">
                 <li><a href="#"><?php echo __('Correo') ?> <span class="pull-right badge bg-blue"><?php echo $User->email ?></span></a></li>
-                <li><a href="#"><?php echo __('Rol de Usuario') ?> <span class="pull-right badge bg-aqua"><?php echo $rol_de_usuario ?></span></a></li>
                 <li><a href="#"><?php echo __('Celular') ?> <span class="pull-right badge bg-yellow"><?php echo $User->celular ?></span></a></li>
               </ul>
             </div>
