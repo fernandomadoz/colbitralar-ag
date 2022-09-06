@@ -30,8 +30,19 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/list/{gen_modelo}/{gen_opcion}', 'GenericController@index');
 	// FIN RUTAS GENERICAS
 
+	Route::post('change-password', 'HomeController@changePassword');
+	
+
 
 });
+
+//Certificados
+Route::get('/certificado/view/{codigo}', 'CertificadoController@viewCertificado');
+Route::get('/certificado/matricula/{afiliado_id}/{hash}', 'CertificadoController@printCertificadoMatriculaPDF');
+Route::get('/certificado/etica/{afiliado_id}/{hash}', 'CertificadoController@printcertificadoEticaPDF');
+Route::get('/validar/certificado-matricula/{afiliado_id}/{hash}', 'CertificadoController@validarCertificadoMatricula');
+Route::get('/validar/certificado-etica/{afiliado_id}/{hash}', 'CertificadoController@validarCertificadoEtica');
+
 
 Route::get('/prueba', function () {
     return view('prueba');

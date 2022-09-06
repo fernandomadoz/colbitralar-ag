@@ -1,5 +1,9 @@
 <?php
 $rol_de_usuario_id = Auth::user()->rol_de_usuario_id;
+$rol_de_usuario = '';
+if ($rol_de_usuario_id <> '') {
+  $rol_de_usuario = $User->rol_de_usuario->rol_de_usuario;
+}
 ?>
 
 
@@ -56,15 +60,15 @@ $rol_de_usuario_id = Auth::user()->rol_de_usuario_id;
             <!-- Add the bg color to the header using any of the bg-* classes -->
             <div class="widget-user-header bg-aqua-active">
               <h3 class="widget-user-username"><?php echo $User->name ?></h3>
-              <h5 class="widget-user-desc"><?php echo $User->rol_de_usuario->rol_de_usuario ?></h5>
+              <h5 class="widget-user-desc"><?php echo $rol_de_usuario ?></h5>
             </div>
             <div class="widget-user-image">
               <?php 
-              if ($User->file_imagen_de_perfil == '') {
+              if ($User->img_avatar == '') {
                 $avatar = env('PATH_PUBLIC').'/img/avatar-sin-imagen.png';
               }
               else {
-                $avatar = env('PATH_PUBLIC').'storage/'.$User->file_imagen_de_perfil;
+                $avatar = $User->img_avatar;
               }
               ?>
               <img class="img-circle" src="<?php echo $avatar ?>" alt="User Avatar">
@@ -74,14 +78,15 @@ $rol_de_usuario_id = Auth::user()->rol_de_usuario_id;
             <div class="box-footer no-padding">
               <ul class="nav nav-stacked">
                 <li><a href="#"><?php echo __('Correo') ?> <span class="pull-right badge bg-blue"><?php echo $User->email ?></span></a></li>
-                <li><a href="#"><?php echo __('Rol de Usuario') ?> <span class="pull-right badge bg-aqua"><?php echo $User->rol_de_usuario->rol_de_usuario ?></span></a></li>
-                <li><a href="#"><?php echo __('Telegram Chat ID') ?> <span class="pull-right badge bg-grey"><?php echo $User->telegram_chat_id ?></span></a></li>
+                <li><a href="#"><?php echo __('Rol de Usuario') ?> <span class="pull-right badge bg-aqua"><?php echo $rol_de_usuario ?></span></a></li>
                 <li><a href="#"><?php echo __('Celular') ?> <span class="pull-right badge bg-yellow"><?php echo $User->celular ?></span></a></li>
               </ul>
             </div>
             <div class="box-footer no-padding">
               <p>
-              <button type="button" style="margin: 10px" class="btn btn-primary btn-md pull-right" data-toggle="modal" data-target="#modal-solicitud-abm" onclick="crearABM_user(<?php echo $User->id ?>)"><?php echo __('Modificar') ?></button>
+              <button type="button" style="margin: 10px" class="btn btn-primary btn-md pull-left" data-toggle="modal" data-target="#modal-cambiar-pass" onclick="crearABM_user(<?php echo $User->id ?>)"><i class="fa fa-fw fa-key"></i> <?php echo __('Cambiar Contraseña') ?></button>
+              <button type="button" style="margin: 10px" class="btn btn-primary btn-md pull-right" data-toggle="modal" data-target="#modal-solicitud-abm" onclick="crearABM_user(<?php echo $User->id ?>)"><?php echo __('Modificar') ?> <?php echo __('Datos') ?></button>
+              
               </p><br>
             </div>
           </div>
@@ -107,7 +112,7 @@ $rol_de_usuario_id = Auth::user()->rol_de_usuario_id;
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title"><div id="modal-titulo"><?php echo $User->name ?></div></h4>
+          <h4 class="modal-title"><div id="modal-titulo">Actualice sus datos</div></h4>
         </div>
         <div class="modal-body" id="modal-bodi-abm">
 
@@ -120,12 +125,94 @@ $rol_de_usuario_id = Auth::user()->rol_de_usuario_id;
   </div>
 <!-- MODAL ABM -->
 
+<!-- MODAL PASSWORD -->
+  <div class="modal modal fade" id="modal-cambiar-pass">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"><div id="modal-titulo"><?php echo __('Cambiar Contraseña') ?></div></h4>
+        </div>
+        <div class="modal-body" id="modal-bodi-abm">
+
+
+          <div class="panel-body">
+              <form class="form-horizontal" method="POST" action="{{ url(ENV('PATH_PUBLIC').'change-password') }}">
+                  {{ csrf_field() }}
+
+                  <div class="form-group{{ $errors->has('mypassword') ? ' has-error' : '' }}">
+                      <label for="mypassword" class="col-md-4 control-label"><?php echo __('Contraseña actual') ?></label>
+
+                      <div class="col-md-6">
+                          <input id="mypassword" type="password" class="form-control" name="mypassword" required>
+
+                          @if ($errors->has('mypassword'))
+                              <span class="help-block">
+                                  <strong>{{ $errors->first('mypassword') }}</strong>
+                              </span>
+                          @endif
+                      </div>
+                  </div>
+
+                  <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                      <label for="password" class="col-md-4 control-label"><?php echo __('Nueva Contraseña') ?></label>
+
+                      <div class="col-md-6">
+                          <input id="password" type="password" class="form-control" name="password" required>
+
+                          @if ($errors->has('password'))
+                              <span class="help-block">
+                                  <strong>{{ $errors->first('password') }}</strong>
+                              </span>
+                          @endif
+                      </div>
+                  </div>
+
+                  <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
+                      <label for="password_confirmation" class="col-md-4 control-label"><?php echo __('Confirmar nueva contraseña') ?></label>
+
+                      <div class="col-md-6">
+                          <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" required>
+
+                          @if ($errors->has('password_confirmation'))
+                              <span class="help-block">
+                                  <strong>{{ $errors->first('password_confirmation') }}</strong>
+                              </span>
+                          @endif
+                      </div>
+                  </div>
+
+
+
+
+
+                  <div class="form-group">
+                      <div class="col-md-6 col-md-offset-4">
+                          <button type="submit" class="btn btn-primary">
+                              <?php echo __('Cambiar Contraseña') ?>
+                          </button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+
+
+        </div>
+
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+<!-- MODAL PASSWORD -->
+
 
 <!-- FUNCIONES MODIFICAR DATOS -->
   <?php 
   $gen_seteo = array(
       'gen_url_siguiente' => 'back', 
-      'no_mostrar_campos_abm' => 'password|rol_de_usuario_id|remember_token|afiliado_id|name'
+      'no_mostrar_campos_abm' => 'password|rol_de_usuario_id|remember_token'
     );
   ?>   
 

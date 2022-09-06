@@ -1,4 +1,5 @@
 <?php 
+use App\Afiliado;
 
 if (Auth::user()->rol_de_usuario_id <> '') {
   $nivel_de_acceso = Auth::user()->rol_de_usuario->nivel_de_acceso;
@@ -20,6 +21,10 @@ else {
   $file_imagen_de_perfil = env('PATH_PUBLIC').'img/avatar-sin-imagen.png';
 }
 
+
+
+$afiliado_id = Auth::user()->afiliado_id;
+$Afiliado = Afiliado::where('id_afiliado', $afiliado_id)->first();
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +111,7 @@ else {
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="{{{ $file_imagen_de_perfil }}}" class="user-image" alt="User Image">
-              <span class="hidden-xs">{{{ Auth::user()->name }}}</span>
+              <span class="hidden-xs">{{$Afiliado->nombre}}</span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
@@ -114,7 +119,7 @@ else {
                 <img src="{{{ $file_imagen_de_perfil }}}" class="img-circle" alt="User Image">
 
                 <p>
-                  {{{ Auth::user()->name }}} <br> {{{ Auth::user()->email }}}
+                  {{$Afiliado->nombre}} <br> {{ Auth::user()->email }}
                 </p>
               </li>
               <!-- Menu Footer-->
@@ -150,7 +155,7 @@ else {
           <img src="{{{ $file_imagen_de_perfil }}}" class="img-circle" alt="User Image">
         </div>
         <div class="pull-left info">
-          <p>{{{ Auth::user()->name }}}</p>
+          <p>{{$Afiliado->nombre}} {{$Afiliado->apellido}}</p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -169,8 +174,8 @@ else {
           </a>
           <ul class="treeview-menu">
               <li><a href="<?php echo env('PATH_PUBLIC')?>micuenta"><i class="fa fa-file-text-o"></i> Mi Cuenta</a></li>              
-              <li><a href="<?php echo env('PATH_PUBLIC')?>list/Orden_de_trabajo/7"><i class="fa fa-file-text-o"></i> Constancia de Matricula</a></li>              
-              <li><a href="<?php echo env('PATH_PUBLIC')?>list/Orden_de_trabajo/7"><i class="fa fa-file-text-o"></i> Certificado de Ética</a></li>   
+              <li><a href="<?php echo env('PATH_PUBLIC')?>certificado/view/1"><i class="fa fa-file-text-o"></i> Constancia de Matricula</a></li>              
+              <li><a href="<?php echo env('PATH_PUBLIC')?>certificado/view/2"><i class="fa fa-file-text-o"></i> Certificado de Ética</a></li>              
           </ul>
         </li>
         <?php } ?>
@@ -202,9 +207,12 @@ else {
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
 
-    <?php 
+    <?php
+    if(isset($mensaje) or Session::get('mensaje') <> '' or $errors->any()) {
 
-    if(isset($mensaje) or $errors->any()) {
+      if (Session::get('mensaje') <> '' and !isset($mensaje)) {
+        $mensaje = Session::get('mensaje');
+      }
 
       $mensaje_class = 'alert-success';
       $mensaje_icon = 'fa-check';
@@ -216,7 +224,7 @@ else {
           $mensaje_class = 'alert-warning';
           foreach ($errors->all() as $error) {
             $mensaje_detalle .= "<p>$error</p>";
-          }          
+          }
         }
         else {
           $errors_array = $errors->all();
@@ -232,26 +240,26 @@ else {
           $mensaje_detalle = $mensaje['detalle'];
         }
         else {
-          $mensaje_detalle = $mensaje;  
+          $mensaje_detalle = $mensaje;
         }
 
         if (isset($mensaje['error']) and $mensaje['error']) {
           $mensaje_icon = 'fa fa-ban';
-        }        
+        }
       }
 
     ?>
       <section class="content-header">
-        <div class="row">    
+        <div class="row">
           <div class="col-xs-12">
             <br>
             <div class="alert <?php echo $mensaje_class; ?> alert-dismissible">
               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-              <h4><i class="icon fa <?php echo $mensaje_icon; ?>"></i> <?php echo $mensaje_detalle; ?></h4>  
+              <h4><i class="icon fa <?php echo $mensaje_icon; ?>"></i> <?php echo $mensaje_detalle; ?></h4>
             </div>
-          </div>   
+          </div>
         </div>
-      </section> 
+      </section>
     <?php } ?>
 
     @yield('contenido')
